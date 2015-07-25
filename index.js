@@ -51,12 +51,12 @@ var convertBuffersToBase64 = function (object, ancestors) {
   }
   var newAncestors = ancestors.concat([object]);
   
-  if (typeof ArrayBuffer != 'undefined' && object instanceof ArrayBuffer) {
+  if (global.ArrayBuffer && object instanceof global.ArrayBuffer) {
     object = {
       base64: true,
       data: arrayBufferToBase64(object)
     };
-  } else if (typeof Buffer != 'undefined' && object instanceof Buffer) {
+  } else if (global.Buffer && object instanceof global.Buffer) {
     object = {
       base64: true,
       data: object.toString('base64')
