@@ -1,13 +1,36 @@
-module.exports.parse = function (buffer) {
-  if (buffer == null) {
+var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+module.exports.parse = function (input) {
+  if (input == null) {
    return null;
   }
-  var message = buffer.toString();
+  var message = input.toString();
   
   try {
     return JSON.parse(message);
   } catch (err) {}
   return message;
+};
+
+var arrayBufferToBase64 = function (arraybuffer) {
+  var bytes = new Uint8Array(arraybuffer);
+  var len = bytes.length;
+  var base64 = '';
+
+  for (var i = 0; i < len; i += 3) {
+    base64 += base64Chars[bytes[i] >> 2];
+    base64 += base64Chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+    base64 += base64Chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+    base64 += base64Chars[bytes[i + 2] & 63];
+  }
+
+  if ((len % 3) === 2) {
+    base64 = base64.substring(0, base64.length - 1) + '=';
+  } else if (len % 3 === 1) {
+    base64 = base64.substring(0, base64.length - 2) + '==';
+  }
+
+  return base64;
 };
 
 var isOwnDescendant = function (object, ancestors) {
@@ -27,8 +50,13 @@ var convertBuffersToBase64 = function (object, ancestors) {
     throw new Error('Cannot traverse circular structure');
   }
   var newAncestors = ancestors.concat([object]);
-
-  if (object instanceof Buffer) {
+  
+  if (typeof ArrayBuffer != 'undefined' && object instanceof ArrayBuffer) {
+    object = {
+      base64: true,
+      data: arrayBufferToBase64(object)
+    };
+  } else if (typeof Buffer != 'undefined' && object instanceof Buffer) {
     object = {
       base64: true,
       data: object.toString('base64')
