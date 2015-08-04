@@ -35,8 +35,10 @@ var arrayBufferToBase64 = function (arraybuffer) {
 
 var isOwnDescendant = function (object, ancestors) {
   for (var i in ancestors) {
-    if (ancestors[i] === object) {
-      return true;
+    if (ancestors.hasOwnProperty(i)) {
+      if (ancestors[i] === object) {
+        return true;
+      }
     }
   }
   return false;
@@ -63,11 +65,15 @@ var convertBuffersToBase64 = function (object, ancestors) {
     };
   } else if (object instanceof Array) {
     for (var i in object) {
-      object[i] = convertBuffersToBase64(object[i], newAncestors);
+      if (object.hasOwnProperty(i)) {
+        object[i] = convertBuffersToBase64(object[i], newAncestors);
+      }
     }
   } else if (object instanceof Object) {
     for (var j in object) {
-      object[j] = convertBuffersToBase64(object[j], newAncestors);
+      if (object.hasOwnProperty(j)) {
+        object[j] = convertBuffersToBase64(object[j], newAncestors);
+      }
     }
   }
   return object;
