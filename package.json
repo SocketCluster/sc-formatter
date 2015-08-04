@@ -1,7 +1,7 @@
 {
   "name": "sc-formatter",
   "description": "Module for serializing and unserializing SocketCluster messages",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "contributors": [
     {
       "name": "Jonathan Gros-Dubois",
