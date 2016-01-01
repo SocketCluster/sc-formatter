@@ -5,7 +5,7 @@ module.exports.parse = function (input) {
    return null;
   }
   var message = input.toString();
-  
+
   try {
     return JSON.parse(message);
   } catch (err) {}
@@ -52,7 +52,7 @@ var convertBuffersToBase64 = function (object, ancestors) {
     throw new Error('Cannot traverse circular structure');
   }
   var newAncestors = ancestors.concat([object]);
-  
+
   if (global.ArrayBuffer && object instanceof global.ArrayBuffer) {
     object = {
       base64: true,
