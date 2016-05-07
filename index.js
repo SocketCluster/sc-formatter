@@ -34,14 +34,7 @@ var arrayBufferToBase64 = function (arraybuffer) {
 };
 
 var isOwnDescendant = function (object, ancestors) {
-  for (var i in ancestors) {
-    if (ancestors.hasOwnProperty(i)) {
-      if (ancestors[i] === object) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return ancestors.indexOf(object) > -1;
 };
 
 var convertBuffersToBase64 = function (object, ancestors) {
