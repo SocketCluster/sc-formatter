@@ -1,7 +1,7 @@
 {
   "name": "sc-formatter",
   "description": "Module for serializing and unserializing SocketCluster messages",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "contributors": [
     {
       "name": "Jonathan Gros-Dubois",
@@ -19,7 +19,10 @@
     "serialize",
     "stringify",
     "parser",
-    "parse"
+    "parse",
+    "encode",
+    "decode",
+    "codec"
   ],
   "license": "MIT",
   "readmeFilename": "README.md"

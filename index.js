@@ -1,6 +1,6 @@
 var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-module.exports.parse = function (input) {
+module.exports.decode = function (input) {
   if (input == null) {
    return null;
   }
@@ -72,7 +72,7 @@ var convertBuffersToBase64 = function (object, ancestors) {
   return object;
 };
 
-module.exports.stringify = function (object) {
+module.exports.encode = function (object) {
   var base64Object = convertBuffersToBase64(object);
   return JSON.stringify(base64Object);
 };
