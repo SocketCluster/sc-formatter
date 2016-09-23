@@ -76,7 +76,7 @@ var convertBuffersToBase64 = function (object, ancestors) {
 
 // Encode a raw JavaScript object (which is in the SC protocol format) into a format for
 // transfering it over the wire. In this case, we just convert it into a simple JSON string.
-// If you want to create your own custom encoder, you can encode it into any format
+// If you want to create your own custom encoder, you can encode the object into any format
 // (e.g. binary ArrayBuffer or string with any kind of compression) so long as your decode
 // function is able to rehydrate that object back into its original JavaScript Object format
 // (which adheres to the SC protocol).
