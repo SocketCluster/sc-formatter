@@ -1,5 +1,7 @@
 var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
+// Decode the data which was transmitted over the wire to a JavaScript Object in a format which SC understands.
+// See encode function below for more details.
 module.exports.decode = function (input) {
   if (input == null) {
    return null;
@@ -72,6 +74,11 @@ var convertBuffersToBase64 = function (object, ancestors) {
   return object;
 };
 
+// Encode a raw JavaScript object (which is in the SC protocol format) into a format for transfering it over the wire.
+// In this case, we just convert it into a simple JSON string. If you want to create your own custom encoder,
+// you can encode it into any format (e.g. binary ArrayBuffer or string with any kind of compression) so long as your decode function is able to
+// rehydrate that object into its original JavaScript Object format (which adhered to the SC protocol).
+// See https://github.com/SocketCluster/socketcluster/blob/master/socketcluster-protocol.md for details about the SC protocol.
 module.exports.encode = function (object) {
   var base64Object = convertBuffersToBase64(object);
   return JSON.stringify(base64Object);
