@@ -39,10 +39,10 @@ var binaryToBase64Replacer = function (key, value) {
     // before we can convert them to base64 strings.
     if (value && value.type == 'Buffer' && value.data instanceof Array) {
       var rehydratedBuffer;
-      if (Buffer.from) {
-        rehydratedBuffer = Buffer.from(value.data);
+      if (global.Buffer.from) {
+        rehydratedBuffer = global.Buffer.from(value.data);
       } else {
-        rehydratedBuffer = new Buffer(value.data);
+        rehydratedBuffer = new global.Buffer(value.data);
       }
       return {
         base64: true,
