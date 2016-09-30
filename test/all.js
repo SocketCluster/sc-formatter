@@ -5,7 +5,7 @@ describe('sc-formatter', function () {
 
   var ab2str = function (buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
-  }
+  };
 
   var str2ab = function (str) {
     var buf = new ArrayBuffer(str.length);
@@ -14,7 +14,7 @@ describe('sc-formatter', function () {
       bufView[i] = str.charCodeAt(i);
     }
     return buf;
-  }
+  };
 
   describe('sc-formatter#encode', function () {
     it('should encode an Object into a string', function (done) {
