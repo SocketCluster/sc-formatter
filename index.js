@@ -1,19 +1,5 @@
 var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-// Decode the data which was transmitted over the wire to a JavaScript Object in a format which SC understands.
-// See encode function below for more details.
-module.exports.decode = function (input) {
-  if (input == null) {
-   return null;
-  }
-  var message = input.toString();
-
-  try {
-    return JSON.parse(message);
-  } catch (err) {}
-  return message;
-};
-
 var arrayBufferToBase64 = function (arraybuffer) {
   var bytes = new Uint8Array(arraybuffer);
   var len = bytes.length;
@@ -35,44 +21,52 @@ var arrayBufferToBase64 = function (arraybuffer) {
   return base64;
 };
 
-var isOwnDescendant = function (object, ancestors) {
-  return ancestors.indexOf(object) > -1;
-};
-
-var convertBuffersToBase64 = function (object, ancestors) {
-  if (!ancestors) {
-    ancestors = [];
-  }
-  if (isOwnDescendant(object, ancestors)) {
-    throw new Error('Cannot traverse circular structure');
-  }
-  var newAncestors = ancestors.concat([object]);
-
-  if (global.ArrayBuffer && object instanceof global.ArrayBuffer) {
-    object = {
+var binaryToBase64Replacer = function (key, value) {
+  if (global.ArrayBuffer && value instanceof global.ArrayBuffer) {
+    return {
       base64: true,
-      data: arrayBufferToBase64(object)
+      data: arrayBufferToBase64(value)
     };
-  } else if (global.Buffer && object instanceof global.Buffer) {
-    object = {
-      base64: true,
-      data: object.toString('base64')
-    };
-  } else if (object instanceof Array) {
-    for (var i in object) {
-      if (object.hasOwnProperty(i)) {
-        object[i] = convertBuffersToBase64(object[i], newAncestors);
-      }
+  } else if (global.Buffer) {
+    if (value instanceof global.Buffer){
+      return {
+        base64: true,
+        data: value.toString('base64')
+      };
     }
-  } else if (object instanceof Object) {
-    for (var j in object) {
-      if (object.hasOwnProperty(j)) {
-        object[j] = convertBuffersToBase64(object[j], newAncestors);
+    // Some versions of Node.js convert Buffers to Objects before they are passed to
+    // the replacer function - Because of this, we need to rehydrate Buffers
+    // before we can convert them to base64 strings.
+    if (value && value.type == 'Buffer' && value.data instanceof Array) {
+      var rehydratedBuffer;
+      if (Buffer.from) {
+        rehydratedBuffer = Buffer.from(value.data);
+      } else {
+        rehydratedBuffer = new Buffer(value.data);
       }
+      return {
+        base64: true,
+        data: rehydratedBuffer.toString('base64')
+      };
     }
   }
-  return object;
+  return value;
 };
+
+// Decode the data which was transmitted over the wire to a JavaScript Object in a format which SC understands.
+// See encode function below for more details.
+module.exports.decode = function (input) {
+  if (input == null) {
+   return null;
+  }
+  var message = input.toString();
+
+  try {
+    return JSON.parse(message);
+  } catch (err) {}
+  return message;
+};
+
 
 // Encode a raw JavaScript object (which is in the SC protocol format) into a format for
 // transfering it over the wire. In this case, we just convert it into a simple JSON string.
@@ -83,6 +77,5 @@ var convertBuffersToBase64 = function (object, ancestors) {
 // See https://github.com/SocketCluster/socketcluster/blob/master/socketcluster-protocol.md
 // for details about the SC protocol.
 module.exports.encode = function (object) {
-  var base64Object = convertBuffersToBase64(object);
-  return JSON.stringify(base64Object);
+  return JSON.stringify(object, binaryToBase64Replacer);
 };
