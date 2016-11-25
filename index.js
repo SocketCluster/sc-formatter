@@ -59,6 +59,10 @@ module.exports.decode = function (input) {
   if (input == null) {
    return null;
   }
+  // Leave ping or pong message as is
+  if (input == '#1' || input == '#2') {
+    return input;
+  }
   var message = input.toString();
 
   try {
@@ -77,5 +81,9 @@ module.exports.decode = function (input) {
 // See https://github.com/SocketCluster/socketcluster/blob/master/socketcluster-protocol.md
 // for details about the SC protocol.
 module.exports.encode = function (object) {
+  // Leave ping or pong message as is
+  if (object == '#1' || object == '#2') {
+    return object;
+  }
   return JSON.stringify(object, binaryToBase64Replacer);
 };
