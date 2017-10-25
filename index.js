@@ -37,7 +37,7 @@ var binaryToBase64Replacer = function (key, value) {
     // Some versions of Node.js convert Buffers to Objects before they are passed to
     // the replacer function - Because of this, we need to rehydrate Buffers
     // before we can convert them to base64 strings.
-    if (value && value.type == 'Buffer' && value.data instanceof Array) {
+    if (value && value.type === 'Buffer' && Array.isArray(value.data)) {
       var rehydratedBuffer;
       if (global.Buffer.from) {
         rehydratedBuffer = global.Buffer.from(value.data);
@@ -60,7 +60,7 @@ module.exports.decode = function (input) {
    return null;
   }
   // Leave ping or pong message as is
-  if (input == '#1' || input == '#2') {
+  if (input === '#1' || input === '#2') {
     return input;
   }
   var message = input.toString();
@@ -70,7 +70,6 @@ module.exports.decode = function (input) {
   } catch (err) {}
   return message;
 };
-
 
 // Encode a raw JavaScript object (which is in the SC protocol format) into a format for
 // transfering it over the wire. In this case, we just convert it into a simple JSON string.
@@ -82,7 +81,7 @@ module.exports.decode = function (input) {
 // for details about the SC protocol.
 module.exports.encode = function (object) {
   // Leave ping or pong message as is
-  if (object == '#1' || object == '#2') {
+  if (object === '#1' || object === '#2') {
     return object;
   }
   return JSON.stringify(object, binaryToBase64Replacer);
