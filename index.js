@@ -1,4 +1,5 @@
 var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var validJSONStartRegex = /^[ \n\r\t]*[{\[]/;
 
 var arrayBufferToBase64 = function (arraybuffer) {
   var bytes = new Uint8Array(arraybuffer);
@@ -64,6 +65,11 @@ module.exports.decode = function (input) {
     return input;
   }
   var message = input.toString();
+
+  // Performance optimization to detect invalid JSON packet sooner.
+  if (!validJSONStartRegex.test(message)) {
+    return message;
+  }
 
   try {
     return JSON.parse(message);
