@@ -54,6 +54,12 @@ var binaryToBase64Replacer = function (key, value) {
   return value;
 };
 
+var base64ToBinaryReplacer = function (key, value) {
+  return typeof value === "object" && value.base64 === true && typeof value.data === "string"
+    ? Buffer.from(value.data, "base64")
+    : value;
+}
+
 // Decode the data which was transmitted over the wire to a JavaScript Object in a format which SC understands.
 // See encode function below for more details.
 module.exports.decode = function (input) {
@@ -72,7 +78,7 @@ module.exports.decode = function (input) {
   }
 
   try {
-    return JSON.parse(message);
+    return JSON.parse(message, base64ToBinaryReplacer);
   } catch (err) {}
   return message;
 };
