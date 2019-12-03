@@ -56,7 +56,7 @@ var binaryToBase64Replacer = function (key, value) {
 
 var base64ToBinaryReplacer = function (key, value) {
   return typeof value === "object" && value.base64 === true && typeof value.data === "string"
-    ? Buffer.from(value.data, "base64")
+    ? global.Buffer.from(value.data, "base64")
     : value;
 }
 
