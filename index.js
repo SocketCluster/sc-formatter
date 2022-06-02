@@ -1,12 +1,12 @@
-var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-var validJSONStartRegex = /^[ \n\r\t]*[{\[]/;
+const base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const validJSONStartRegex = /^[ \n\r\t]*[{\[]/;
 
-var arrayBufferToBase64 = function (arraybuffer) {
-  var bytes = new Uint8Array(arraybuffer);
-  var len = bytes.length;
-  var base64 = '';
+let arrayBufferToBase64 = function (arraybuffer) {
+  let bytes = new Uint8Array(arraybuffer);
+  let len = bytes.length;
+  let base64 = '';
 
-  for (var i = 0; i < len; i += 3) {
+  for (let i = 0; i < len; i += 3) {
     base64 += base64Chars[bytes[i] >> 2];
     base64 += base64Chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
     base64 += base64Chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
@@ -22,7 +22,7 @@ var arrayBufferToBase64 = function (arraybuffer) {
   return base64;
 };
 
-var binaryToBase64Replacer = function (key, value) {
+let binaryToBase64Replacer = function (key, value) {
   if (global.ArrayBuffer && value instanceof global.ArrayBuffer) {
     return {
       base64: true,
@@ -39,7 +39,7 @@ var binaryToBase64Replacer = function (key, value) {
     // the replacer function - Because of this, we need to rehydrate Buffers
     // before we can convert them to base64 strings.
     if (value && value.type === 'Buffer' && Array.isArray(value.data)) {
-      var rehydratedBuffer;
+      let rehydratedBuffer;
       if (global.Buffer.from) {
         rehydratedBuffer = global.Buffer.from(value.data);
       } else {
@@ -56,15 +56,15 @@ var binaryToBase64Replacer = function (key, value) {
 
 // Decode the data which was transmitted over the wire to a JavaScript Object in a format which SC understands.
 // See encode function below for more details.
-module.exports.decode = function (input) {
-  if (input == null) {
+module.exports.decode = function (encodedMessage) {
+  if (encodedMessage == null) {
    return null;
   }
   // Leave ping or pong message as is
-  if (input === '#1' || input === '#2') {
-    return input;
+  if (encodedMessage === '#1' || encodedMessage === '#2') {
+    return encodedMessage;
   }
-  var message = input.toString();
+  let message = encodedMessage.toString();
 
   // Performance optimization to detect invalid JSON packet sooner.
   if (!validJSONStartRegex.test(message)) {
@@ -77,7 +77,7 @@ module.exports.decode = function (input) {
   return message;
 };
 
-// Encode a raw JavaScript object (which is in the SC protocol format) into a format for
+// Encode raw data (which is in the SC protocol format) into a format for
 // transfering it over the wire. In this case, we just convert it into a simple JSON string.
 // If you want to create your own custom codec, you can encode the object into any format
 // (e.g. binary ArrayBuffer or string with any kind of compression) so long as your decode
@@ -85,10 +85,10 @@ module.exports.decode = function (input) {
 // (which adheres to the SC protocol).
 // See https://github.com/SocketCluster/socketcluster/blob/master/socketcluster-protocol.md
 // for details about the SC protocol.
-module.exports.encode = function (object) {
+module.exports.encode = function (rawData) {
   // Leave ping or pong message as is
-  if (object === '#1' || object === '#2') {
-    return object;
+  if (rawData === '#1' || rawData === '#2') {
+    return rawData;
   }
-  return JSON.stringify(object, binaryToBase64Replacer);
+  return JSON.stringify(rawData, binaryToBase64Replacer);
 };
