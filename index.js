@@ -23,13 +23,13 @@ let arrayBufferToBase64 = function (arraybuffer) {
 };
 
 let binaryToBase64Replacer = function (key, value) {
-  if (global.ArrayBuffer && value instanceof global.ArrayBuffer) {
+  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
     return {
       base64: true,
       data: arrayBufferToBase64(value)
     };
-  } else if (global.Buffer) {
-    if (value instanceof global.Buffer){
+  } else if (typeof Buffer !== 'undefined') {
+    if (value instanceof Buffer){
       return {
         base64: true,
         data: value.toString('base64')
@@ -40,10 +40,10 @@ let binaryToBase64Replacer = function (key, value) {
     // before we can convert them to base64 strings.
     if (value && value.type === 'Buffer' && Array.isArray(value.data)) {
       let rehydratedBuffer;
-      if (global.Buffer.from) {
-        rehydratedBuffer = global.Buffer.from(value.data);
+      if (Buffer.from) {
+        rehydratedBuffer = Buffer.from(value.data);
       } else {
-        rehydratedBuffer = new global.Buffer(value.data);
+        rehydratedBuffer = new Buffer(value.data);
       }
       return {
         base64: true,
